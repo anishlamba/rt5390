@@ -1,0 +1,32 @@
+--- os/linux/rt_linux.c.orig	2012-10-22 05:52:59.000000000 +0200
++++ os/linux/rt_linux.c	2013-12-28 19:13:28.677118438 +0100
+@@ -34,6 +34,10 @@
+ #include "rt_os_util.h"
+ #include <linux/rtnetlink.h>
+ 
++#ifdef CONFIG_UIDGID_STRICT_TYPE_CHECKS
++#include <linux/uidgid.h>
++#endif
++
+ #if defined(CONFIG_RA_HW_NAT) || defined(CONFIG_RA_HW_NAT_MODULE)
+ #include "../../../../../../net/nat/hw_nat/ra_nat.h"
+ #include "../../../../../../net/nat/hw_nat/frame_engine.h"
+@@ -1138,9 +1142,15 @@
+ 		pOSFSInfo->fsgid = current->fsgid;
+ 		current->fsuid = current->fsgid = 0;
+ #else
++#ifdef CONFIG_UIDGID_STRICT_TYPE_CHECKS
++		struct user_namespace *to = current_user_ns();
++		pOSFSInfo->fsuid = from_kuid_munged(to, current_fsuid());
++		pOSFSInfo->fsgid = from_kgid_munged(to, current_fsgid());
++#else
+ 		pOSFSInfo->fsuid = current_fsuid();
+ 		pOSFSInfo->fsgid = current_fsgid();
+ #endif
++#endif
+ 		pOSFSInfo->fs = get_fs();
+ 		set_fs(KERNEL_DS);
+ 	} else {
+
+
+
