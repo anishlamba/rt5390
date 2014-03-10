@@ -9,10 +9,10 @@ GCC 4.7 required.
 
 usage:
 
-# make clean
+make clean
 
-# make
+sudo make
 
-# make install
+sudo make install
 
-# modprobe rt5390sta
+sudo modprobe rt5390sta
