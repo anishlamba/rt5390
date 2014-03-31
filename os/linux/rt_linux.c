@@ -33,9 +33,7 @@
 #include "rtmp_osabl.h"
 #include "rt_os_util.h"
 
-#ifdef CONFIG_UIDGID_STRICT_TYPE_CHECKS
 #include <linux/uidgid.h>
-#endif
 
 #if defined(CONFIG_RA_HW_NAT) || defined(CONFIG_RA_HW_NAT_MODULE)
 #include "../../../../../../net/nat/hw_nat/ra_nat.h"
@@ -1129,14 +1127,9 @@ static inline void __RtmpOSFSInfoChange(OS_FS_INFO * pOSFSInfo,
 		pOSFSInfo->fsgid = current->fsgid;
 		current->fsuid = current->fsgid = 0;
 #else
-#ifdef CONFIG_UIDGID_STRICT_TYPE_CHECKS
 		struct user_namespace *to = current_user_ns();
 		pOSFSInfo->fsuid = from_kuid_munged(to, current_fsuid());
 		pOSFSInfo->fsgid = from_kgid_munged(to, current_fsgid());
-#else
-		pOSFSInfo->fsuid = current_fsuid();
-		pOSFSInfo->fsgid = current_fsgid();
-#endif
 #endif
 		pOSFSInfo->fs = get_fs();
 		set_fs(KERNEL_DS);
